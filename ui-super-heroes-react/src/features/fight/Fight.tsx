@@ -4,65 +4,32 @@ import { faBattleNet } from '@fortawesome/free-brands-svg-icons'
 import { Box, Button, Card, CardContent, Collapse, Grid } from '@mui/material';
 import { useState } from 'react';
 import './Fight.css';
+import { Hero, useGetApiFightsRandomfightersQuery, fightsApi, Villain } from '../../app/api/fightsApi';
+import { useSelector } from 'react-redux';
+import { selectHero, selectVillain } from './fightSlice';
 
 export function Fight(): JSX.Element {
 
   const [winner, setWinner] = useState("");
   const [isShowingHeroPowers, setIsShowingHeroPowers] = useState(false);
   const [isShowingVillainPowers, setIsShowingVillainPowers] = useState(false);
-
-  interface Hero {
-    name?: string,
-    picture?: string,
-    powers?: string,
-    level?: bigint
-  }
-
-  interface Villain {
-    name?: string,
-    picture?: string,
-    powers?: string,
-    level?: bigint
-  }
-
-  interface Fighters {
-    hero?: Hero,
-    villain?: Villain,
-  }
-
-  const fighterConst: Fighters = {
-    hero: {
-      name: "Hero Bob",
-      picture: "https://raw.githubusercontent.com/quarkusio/quarkus-super-heroes/characterdata/images/manga-fukidashi-956027853811960086.jpg",
-      powers: "Shield Shield",
-      level: BigInt(490)
-    },
-    villain: {
-      name: "Villain Kreg",
-      picture: "https://raw.githubusercontent.com/quarkusio/quarkus-super-heroes/characterdata/images/kal-el-1807017096061602247.jpg",
-      powers: "boom boom",
-      level: BigInt(501)
-    }
-  }
-
-  // todo make sure this is a copy
-  let fighters: Fighters = {
-    ...fighterConst
-  };
+  const { error, isLoading } = useGetApiFightsRandomfightersQuery();
+  const [ trigger, { data } ] = fightsApi.endpoints.getApiFightsRandomfighters.useLazyQuery()
+  const hero: Hero | undefined = useSelector(selectHero);
+  const villain: Villain | undefined = useSelector(selectVillain);
 
   //let winner: string = "";
 
   function fight() {
     // todo see if there is a good way to handle undefined to null assignment
-    if(fighters.hero !== undefined && fighters.hero.name !== undefined) {
-      setWinner(fighters.hero.name);
+    if(hero !== undefined && hero.name !== undefined && villain !== undefined && villain.name !== undefined) {
+      let winnersName = hero.level > villain.level ? hero.name : villain.name;
+      setWinner(winnersName);
     }
   }
 
   function newFighters() {
-    fighters = {
-      ...fighterConst
-    }
+    trigger();
     setWinner("");
   }
 
@@ -74,22 +41,23 @@ export function Fight(): JSX.Element {
     setIsShowingVillainPowers(!isShowingVillainPowers);
   };
 
-  function hero(): JSX.Element {
+  function heroJSX(): JSX.Element {
     return (
-      <Box className={`hero ${fighters.hero?.name === winner ? 'hero-winner-card' : 'off'}`}>
+      <Box className={`hero ${hero?.name === winner ? 'hero-winner-card' : 'off'}`}>
         <h2 className="hero-name">
-          { fighters.hero ? fighters.hero.name : 'No Hero' }
+          { hero ? hero.name : 'No Hero' }
         </h2>
-        { fighters.hero && 
+        { hero && 
         <>
-          <img className="my-rounded pt-3" src={fighters.hero.picture} alt="Hero" />
+          {/*adding a random query name property to the image to prevent caching of the same url. There might be a better way to do this. */}
+          <img key={hero.name} className="my-rounded pt-3" src={hero.picture +"?help=" + hero.name} alt="Hero" />
           <h2>
-            <FontAwesomeIcon icon={faBolt}/>{fighters.hero!.level?.toString()}
+            <FontAwesomeIcon icon={faBolt}/>{hero.level?.toString()}
           </h2>
           <h2 className='p-5'><FontAwesomeIcon role="button" onClick={toggleIsShowingHeroPowers} icon={faAtom} className="powers hero" /></h2>
 
           <Collapse className='pb-5' in={isShowingHeroPowers} >
-              {fighters.hero.powers}
+              {hero.powers}
           </Collapse>
         </>
         }
@@ -97,22 +65,23 @@ export function Fight(): JSX.Element {
     )
   }
 
-  function villain(): JSX.Element {
+  function villainJSX(): JSX.Element {
     return (
-      <Box className={`villain ${fighters.villain?.name === winner? 'villain-winner-card' : 'off'}`}>
+      <Box className={`villain ${villain?.name === winner? 'villain-winner-card' : 'off'}`}>
         <h2 className="villain-name">
-          { fighters.villain ? fighters.villain.name : 'No Hero' }
+          { villain ? villain.name : 'No Hero' }
         </h2>
-        { fighters.villain && 
+        { villain && 
         <>
-          <img className="my-rounded pt-3" src={fighters.villain.picture} alt="Villain" />
+          {/*adding a random query name property to the image to prevent caching of the same url. There might be a better way to do this. */}
+          <img key={villain.name}  className="my-rounded pt-3" src={villain.picture +"?help=" + villain.name} alt="Villain" />
           <h2>
-            <FontAwesomeIcon icon={faBolt}/>{fighters.villain!.level?.toString()}
+            <FontAwesomeIcon icon={faBolt}/>{villain.level?.toString()}
           </h2>
           <h2 className='p-5'><FontAwesomeIcon role="button" onClick={toggleIsShowingVillainPowers} icon={faAtom} className="powers villain" /></h2>
 
           <Collapse in={isShowingVillainPowers} >
-              {fighters.villain.powers}
+              {villain.powers}
           </Collapse>
         </>
         }
@@ -132,8 +101,8 @@ export function Fight(): JSX.Element {
               <Button onClick={fight} variant="contained" size="large" color='secondary' startIcon={<FontAwesomeIcon icon={faBattleNet}/>} style={{minWidth:'200px'}}><h4>FIGHT !</h4></Button>
             </Grid>
           </Grid>
-          {winner && fighters.villain && fighters.hero &&
-          <div className="winner-text p-6">Winner is <span className={winner === fighters.villain.name ? 'winner-villain' : 'winner-hero'}>{winner}</span></div>
+          {winner && villain && hero &&
+          <div className="winner-text p-6">Winner is <span className={winner === villain.name ? 'winner-villain' : 'winner-hero'}>{winner}</span></div>
           }
         </CardContent>
       </Card>
@@ -143,13 +112,13 @@ export function Fight(): JSX.Element {
   return (
       <Grid container spacing={2} className="row" id="fight-row" alignItems="flex-start">
         <Grid item xs={6} sm={4} md={4}>
-          {hero()}
+          {heroJSX()}
         </Grid>
         <Grid item xs={6} sm={4} md={4}>
           {fightOptions()}
         </Grid>
         <Grid item xs={6} sm={4} md={4}>
-          {villain()}
+          {villainJSX()}
         </Grid>
       </Grid>
   );

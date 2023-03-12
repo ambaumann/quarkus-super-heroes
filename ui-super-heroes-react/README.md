@@ -44,3 +44,24 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+# Build API
+
+Tried the following but it failed to integrate into RTK the way I wanted it to.
+`npx @openapitools/openapi-generator-cli generate -i fight-openapi.yaml -g typescript-redux-query -o ./tmp/test/`
+
+Went with a solution at:  https://redux-toolkit.js.org/rtk-query/usage/code-generation
+
+And it works by running the following with installed dependencies and having a config TS file.
+
+`npx @rtk-query/codegen-openapi openapi-config.ts`
+
+
+# Run Prism
+
+`npm run prism`
+
+# Start the application
+
+`npm run start`

@@ -27,10 +27,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev": "concurrently --names \"PRISM,APP\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run prism\" \"npm run start\t",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "api": "npx @rtk-query/codegen-openapi src/app/api/openapi-config.ts",
+    "prism": "prism mock -p 8082 -d ./src/app/api/specs/fight-openapi.yaml"
   },
   "eslintConfig": {
     "extends": [
@@ -51,6 +54,9 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.2.4"
+    "@rtk-query/codegen-openapi": "^1.0.0",
+    "concurrently": "^7.6.0",
+    "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1"
   }
 }
