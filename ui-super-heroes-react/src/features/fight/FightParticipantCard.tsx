@@ -9,7 +9,7 @@ import './FightParticipantCard.css';
 
 
 
-export function FightParticipant(props: {participant: Hero | Villain, heroOrVillain: 'hero'|'villain', winnerName: string|undefined}): JSX.Element {
+export function FightParticipant(props: {participant: Hero | Villain | undefined, heroOrVillain: 'hero'|'villain', winnerName: string|undefined}): JSX.Element {
 
   // can not type check participant because Hero and Villain interfaces have the same parameters
   const classNamePrefix = (props.heroOrVillain === 'hero')? 'hero': 'villain';
@@ -21,6 +21,8 @@ export function FightParticipant(props: {participant: Hero | Villain, heroOrVill
   function toggleIsShowingPowers(): void {
     setIsShowingPowers(!isShowingPowers);
   };
+
+  // TODO participant loading and smoother animation. New fight kinda looks jumpy....
 
 
   return (

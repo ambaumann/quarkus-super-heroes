@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import { Fight } from './features/fight/Fight';
 import './App.css';
 

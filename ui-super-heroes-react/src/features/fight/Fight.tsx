@@ -1,21 +1,22 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAtom, faBolt, faRandom } from '@fortawesome/free-solid-svg-icons'
-import { faBattleNet } from '@fortawesome/free-brands-svg-icons'
-import { Box, Button, Card, CardContent, Collapse, Grid } from '@mui/material';
-import { useState } from 'react';
-import './Fight.css';
-import { Hero, useGetApiFightsRandomfightersQuery, fightsApi, Villain } from '../../app/api/fightsApi';
 import { useSelector } from 'react-redux';
+import { Grid } from '@mui/material';
+
+import { Hero, useGetApiFightsRandomfightersQuery, fightsApi, Villain } from '../../app/api/fightsApi';
 import { heroWins, selectHero, selectVillain, selectWinnerName, villainWins } from './fightSlice';
 import { FightParticipant } from './FightParticipantCard';
 import { store } from '../../app/store';
+import { FightControls } from './FightControls';
+
+import './Fight.css';
+
+
 
 export function Fight(): JSX.Element {
 
-  const [isShowingHeroPowers, setIsShowingHeroPowers] = useState(false);
-  const [isShowingVillainPowers, setIsShowingVillainPowers] = useState(false);
+  // TODO its not apparent that this get call is the initial load. Can use a lazy approach and the trigger with useEffect maybe. Maybe we need to do error handling? Maybe we watch loading state?
   const { error, isLoading } = useGetApiFightsRandomfightersQuery();
   const [ loadNewFighters] = fightsApi.endpoints.getApiFightsRandomfighters.useLazyQuery()
+  // const [ updateFight, {isLoading: isUpdating}] = usePostApiFightsMutation()
   const hero: Hero | undefined = useSelector(selectHero);
   const villain: Villain | undefined = useSelector(selectVillain);
   const winnerName = useSelector(selectWinnerName);
@@ -37,39 +38,16 @@ export function Fight(): JSX.Element {
     loadNewFighters();
   }
 
-  function fightOptions(): JSX.Element {
-    return (
-      <Card >
-        <CardContent>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid item>
-              <Button onClick={newFighters} variant="contained" size="large" startIcon={<FontAwesomeIcon icon={faRandom}/>} style={{minWidth:'200px'}} ><h4>NEW FIGHTERS</h4></Button>
-            </Grid>
-            <Grid item>
-              <Button onClick={fight} variant="contained" size="large" color='secondary' startIcon={<FontAwesomeIcon icon={faBattleNet}/>} style={{minWidth:'200px'}}><h4>FIGHT !</h4></Button>
-            </Grid>
-          </Grid>
-          {winnerName && villain && hero &&
-          <div className="winner-text p-6">Winner is <span className={winnerName === villain.name ? 'winner-villain' : 'winner-hero'}>{winnerName}</span></div>
-          }
-        </CardContent>
-      </Card>
-    )
-  }
-   
   return (
       <Grid container spacing={2} className="row" id="fight-row" alignItems="flex-start">
         <Grid item xs={6} sm={4} md={4}>
-          { hero && 
-            <FightParticipant participant={hero} heroOrVillain='hero' winnerName={winnerName}/>
-          }
+          <FightParticipant participant={hero} heroOrVillain='hero' winnerName={winnerName}/>
         </Grid>
         <Grid item xs={6} sm={4} md={4}>
-          {fightOptions()}
+          <FightControls heroName={hero?.name} villainName={villain?.name} winnerName={winnerName} fightCallback={fight} newFightCallback={newFighters}/>
         </Grid>
         <Grid item xs={6} sm={4} md={4}>
-          { villain && 
-            <FightParticipant participant={villain} heroOrVillain='villain' winnerName={winnerName}/>}
+          <FightParticipant participant={villain} heroOrVillain='villain' winnerName={winnerName}/>
         </Grid>
       </Grid>
   );

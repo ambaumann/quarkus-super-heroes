@@ -33,7 +33,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "api": "npx @rtk-query/codegen-openapi src/app/api/openapi-config.ts",
-    "prism": "prism mock -p 8082 -d ./src/app/api/specs/fight-openapi.yaml"
+    "prism": "prism mock -p 8082 -d --cors ./src/app/api/specs/fight-openapi.yaml"
   },
   "eslintConfig": {
     "extends": [

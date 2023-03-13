@@ -1,0 +1,16 @@
+.winner-text {
+  font-weight: bold;
+  font-size: large;
+}
+
+.winner-hero {
+  color: dodgerblue;
+}
+
+.winner-villain {
+  color: firebrick;
+}
+
+#fight-row {
+  margin-bottom: 30px;
+}
