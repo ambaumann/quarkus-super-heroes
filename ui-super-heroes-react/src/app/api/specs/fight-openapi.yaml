@@ -190,7 +190,7 @@ components:
           x-faker:
             datatype.number:
               min: 1
-              max: 2000000000
+              max: 10000
         picture:
           minLength: 1
           type: string
@@ -239,7 +239,7 @@ components:
           x-faker:
             datatype.number:
               min: 1
-              max: 2000000000
+              max: 10000
         picture:
           minLength: 1
           type: string

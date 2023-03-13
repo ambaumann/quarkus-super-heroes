@@ -41,6 +41,7 @@ export const fightsSlice = createSlice({
         state.status = 'loading';
         state.hero = payload.hero;
         state.villain = payload.villain;
+        state.winner = undefined;
       });
   },
 });
@@ -52,5 +53,6 @@ export const { heroWins, villainWins, newFight } = fightsSlice.actions;
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectHero = (state: RootState) => state.fights.hero;
 export const selectVillain = (state: RootState) => state.fights.villain;
+export const selectWinnerName = (state: RootState) => state.fights.winner?.name;
 
 export default fightsSlice.reducer;
